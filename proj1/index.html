@@ -19,6 +19,10 @@
         h4 {
             font-family: 'Source Sans Pro', sans-serif;
         }
+
+		img {
+			border: 1px solid #555;
+		}
     </style>
     <title>CS 184 Rasterizer</title>
     <meta http-equiv="content-type" content="text/html; charset=utf-8" />
@@ -60,75 +64,175 @@
         </p>
 
         <h2 align="middle">Section I: Rasterization</h2>
-
+		
+		<!-- Task 1 -->
         <h3 align="middle">Part 1: Rasterizing single-color triangles</h3>
+		
+		<p><b>I. Walk through how you rasterize triangles in your own words.</b></p>
+		<blockquote>
+			<p>
+			For the SVG images, the rasterization process is to get the color 
+			of all pixels covered by a specific triangle. We can process each
+			triangle seperately because there are no occlusions across triangles
+			for SVG images, unlike 3D meshes. 
+			</p>
+			<p>
+			Implementation wise, we need to 
+			conduct the three-line test for each pixel to decide whether it is 
+			within a specific triangle. If it is inside, then the pixel color can
+			be accquire from the triangle, otherwise, we can safely skip this pixel,
+			and let other traingles to decide its color.
+			</p>
+		</blockquote>
+		
+		<p><b>
+			II. Explain how your algorithm is no worse than one that checks 
+			each sample within the bounding box of the triangle.
+		</b></p>
+		<blockquote>
+			<p>In my implementation, I just forloop all the samples inside the bounding box.</p>
+		</blockquote>
+			
+		<p><b>
+			III. Show a <em>png</em> screenshot of <em>basic/test4.svg</em> with the 
+			default viewing parameters and with the pixel inspector centered on 
+			an interesting part of the scene.
+		</b></p>
 
-        <!-- 
-        Walk through how you rasterize triangles in your own words.
-        
-        Explain how your algorithm is no worse than one that checks each sample within 
-        the bounding box of the triangle.
+		<div align="middle">
+			<img src="images/task1.3.png" align="middle" width="400px" />
+			<figcaption align="middle">
+				The rasterization of <em>basic/test4.svg</em>.
+			</figcaption>
+        </div>
+		
+		<!-- Task 2 -->
+        <h3 align="middle">Part 2: Antialiasing triangles</h3>
 
-        Show a png screenshot of basic/test4.svg with the default viewing parameters 
-        and with the pixel inspector centered on an interesting part of the scene.
+		<p><b>I. Walk through your supersampling algorithm and data structures. 
+			Why is supersampling useful? What modifications did you make to the 
+			rasterization pipeline in the process? Explain how you used supersampling 
+			to antialias your triangles.
+		</b></p>
+		<blockquote><p>
+			The idea behind the supersampling method for antialiasing, is to smooth the
+			edge of the traingles, by locally averaging color on the edge. A 
+			straight-forward way to do this is to split each sample into multiple sub-samples
+			around it and calculate the color by averaging all those sub-samples. Implementation
+			wise, we have to host a buffer that has a larger resolution than the actual image,
+			for those sub-samples. Then after the rasterization, a simple averaging on on the 
+			sub-samples give you the final color for all the samples. 
+		</p></blockquote>
 
-        Extra credit: Explain any special optimizations you did beyond simple bounding 
-        box triangle rasterization, with a timing comparison table (we suggest using 
-        the c++ clock() function around the svg.draw() command in DrawRend::redraw() 
-        to compare millisecond timings with your various optimizations off and on). 
-        -->
-        
-        <p>
-            
-        </p>
+		<p><b>II. Show png screenshots of basic/test4.svg with the default viewing 
+			parameters and sample rates 1, 4, and 16 to compare them side-by-side. 
+			Position the pixel inspector over an area that showcases the effect 
+			dramatically; for example, a very skinny triangle corner. Explain 
+			why these results are observed.
+		</b></p>
 
-
-        <p>Here is an example 2x2 gridlike structure using an HTML table. 
-            Each <b>tr</b> is a row and each <b>td</b> is a column in that row. 
-            You might find this useful for framing and showing your result 
-            images in an organized fashion.</p>
-
-        <div align="middle">
-            <table width="100%">
+		<div align="middle">
+			<img src="images/task2.2.1.png" align="middle" width="400px" />
+			<figcaption align="middle">Supersample rate 1 per pixel.</figcaption>
+        </div>
+		<div align="middle">
+            <table width="80%">
                 <tr>
                     <td>
-                        <img src="images/image1.png" align="middle" width="400px" />
-                        <figcaption align="middle">Caption goes here.</figcaption>
+                        <img src="images/task2.2.2.png" align="middle" width="400px" />
+                        <figcaption align="middle">Supersample rate 4 per pixel.</figcaption>
                     </td>
                     <td>
-                        <img src="images/image2.png" align="middle" width="400px" />
-                        <figcaption align="middle">Caption goes here.</figcaption>
+                        <img src="images/task2.2.3.png" align="middle" width="400px" />
+                        <figcaption align="middle">Supersample rate 9 per pixel.</figcaption>
                     </td>
                 </tr>
-                <br>
+            </table>
+        </div>
+
+		<!-- Task 3 -->
+        <h3 align="middle">Part 3: Transforms</h3>
+
+		<p><b>Create an updated version of svg/transforms/robot.svg with cubeman 
+			doing something more interesting, like waving or running. Feel free to 
+			change his colors or proportions to suit your creativity. Save your svg 
+			file as my_robot.svg in your docs/ directory and show a png screenshot 
+			of your rendered drawing in your write-up. Explain what you were trying 
+			to do with cubeman in words.
+		</b></p>
+
+		<div align="middle">
+            <table width="70%">
                 <tr>
                     <td>
-                        <img src="images/image3.png" align="middle" width="400px" />
-                        <figcaption align="middle">Caption goes here.</figcaption>
+                        <img src="images/task3.1.1.png" align="middle" width="400px" />
+                        <figcaption align="middle">Cubeman dancing bullet!</figcaption>
                     </td>
                     <td>
-                        <img src="images/image4.png" align="middle" width="400px" />
-                        <figcaption align="middle">Caption goes here.</figcaption>
+                        <img src="images/task3.1.2.png" align="middle" width="300px" />
+                        <figcaption align="middle">
+							Reference image. 
+							Source: <a href="https://www.dancesupplies.com/Ballet-Rosa-Amelie-Leotard.html?gclid=Cj0KCQiAu62QBhC7ARIsALXijXTsZOCV5ZakKA4OBaYHS3CfELzuPNQCcQP2ZMf77gmatOEKrXIlUCsaAgtnEALw_wcB">link</a>
+						</figcaption>
                     </td>
                 </tr>
             </table>
         </div>
 
 
-        <h3 align="middle">Part 2: Antialiasing triangles</h3>
-
-
-
-        <h3 align="middle">Part 3: Transforms</h3>
-
-
 
         <h2 align="middle">Section II: Sampling</h2>
 
+		<!-- Task 4 -->
         <h3 align="middle">Part 4: Barycentric coordinates</h3>
 
+		<p><b>Explain barycentric coordinates in your own words and use an image 
+			to aid you in your explanation. One idea is to use a svg file that plots 
+			a single triangle with one red, one green, and one blue vertex, which 
+			should produce a smoothly blended color triangle.
+		</b></p>
+		<blockquote><p>
+			The barycentric coordinates of a point p represents how close this p to each
+			vertex of the triangle. The more close, the more it would be affected by that 
+			perticular vertex. So the attributes of the point p can be generally interpolated
+			with barycentric coordinates on the attributes of the vertices. Implementation wise,
+			the barycentric coordinates equal to the area of the three sub-triangles divided by the
+			point p.
+		</p></blockquote>
+		<div align="middle">
+			<img src="images/task4.1.png" align="middle" width="400px" />
+			<figcaption align="middle">Barycentric interpolation from red, green, blue.</figcaption>
+        </div>
 
+
+		<p><b>Show a png screenshot of svg/basic/test7.svg with default viewing 
+			parameters and sample rate 1. If you make any additional images with 
+			color gradients, include them.
+		</b></p>
+		<div align="middle">
+			<img src="images/task4.2.png" align="middle" width="400px" />
+			<figcaption align="middle">Screenshot of svg/basic/test7.svg.</figcaption>
+        </div>
+
+		<!-- Task 5 -->
         <h3 align="middle">Part 5: "Pixel sampling" for texture mapping</h3>
+
+		<p><b>Explain pixel sampling in your own words and describe how you 
+			implemented it to perform texture mapping. Briefly discuss the two 
+			different pixel sampling methods, nearest and bilinear.
+		</b></p>
+
+		<p><b>Check out the svg files in the svg/texmap/ directory. Use the pixel 
+			inspector to find a good example of where bilinear sampling clearly 
+			defeats nearest sampling. Show and compare four png screenshots using 
+			nearest sampling at 1 sample per pixel, nearest sampling at 16 samples 
+			per pixel, bilinear sampling at 1 sample per pixel, and bilinear 
+			sampling at 16 samples per pixel.
+		</b></p>
+
+		<p><b>Comment on the relative differences. Discuss when there will be a large 
+			difference between the two methods and why.
+		</b></p>
 
 
         <h3 align="middle">Part 6: "Level sampling" with mipmaps for texture mapping</h3>
