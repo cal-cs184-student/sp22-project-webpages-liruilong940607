@@ -36,6 +36,9 @@
     <h1 align="middle">Project 1: Rasterizer</h1>
     <h2 align="middle">Ruilong Li</h2>
     <h2 align="middle">CS284 - 3037377380</h2>
+    <h2 align="middle">
+		<a href="https://cal-cs184-student.github.io/sp22-project-webpages-liruilong940607/proj1/">Website Link</a>
+	</h2>
 
     <br><br>
 
@@ -222,6 +225,17 @@
 			different pixel sampling methods, nearest and bilinear.
 		</b></p>
 
+		<blockquote><p>
+			Given a texture image, and the uv coordinates of the three triangle
+			vertices, the color of a sample inside the triangle, can be sampled 
+			from the texture image using its barycentric interpolated uv coordinate.
+			Since the barycentric uv might not be integers, while the pixel coordinates
+			on the texutre image are integers, we could have different options on 
+			the sampling. The nearest way just finds the nearest integers for the uv. While 
+			the bilinear way finds the four surrounding pixels for each sample and
+			interpolates the color based on distance.
+		</p></blockquote>
+
 		<p><b>Check out the svg files in the svg/texmap/ directory. Use the pixel 
 			inspector to find a good example of where bilinear sampling clearly 
 			defeats nearest sampling. Show and compare four png screenshots using 
@@ -230,19 +244,103 @@
 			sampling at 16 samples per pixel.
 		</b></p>
 
+		<div align="middle">
+            <table width="80%">
+                <tr>
+                    <td>
+                        <img src="images/task5.2.1.png" align="middle" width="400px" />
+                        <figcaption align="middle">Nearest sampling at 1 sample per pixel.</figcaption>
+                    </td>
+                    <td>
+                        <img src="images/task5.2.2.png" align="middle" width="400px" />
+                        <figcaption align="middle">Bilinear sampling at 1 sample per pixel.</figcaption>
+                    </td>
+                </tr>
+				<br>
+				<tr>
+                    <td>
+                        <img src="images/task5.2.2.png" align="middle" width="400px" />
+                        <figcaption align="middle">Nearest sampling at 16 samples per pixel.</figcaption>
+                    </td>
+                    <td>
+                        <img src="images/task5.2.4.png" align="middle" width="400px" />
+                        <figcaption align="middle">Bilinear sampling at 16 samples per pixel.</figcaption>
+                    </td>
+                </tr>
+            </table>
+        </div>
+
 		<p><b>Comment on the relative differences. Discuss when there will be a large 
 			difference between the two methods and why.
 		</b></p>
 
+		<blockquote><p>
+			The above images show a large difference on thin edges. When the texture map 
+			has high frequency details like thin edges, nearest sampling could easily give 
+			you a color that is totally different than what you want. On the contrary, bilinear
+			sampling on the texture map gives you an averaging color consider its surrounding,
+			reduce the peak error of the color.
+		</p></blockquote>
+
 
         <h3 align="middle">Part 6: "Level sampling" with mipmaps for texture mapping</h3>
 
+		<p><b>Explain level sampling in your own words and describe how you implemented 
+			it for texture mapping.</b></p>
+	
+		<blockquote><p>
+			The idea of level sampling is that for the "smooth" regions, you would want to 
+			sample color on a low-res texture image for antialiasing. For the "sharp" regions,
+			you would want to sample color on a high-res texture image for clearness. Thus 
+			implementation wise we buffer a pyramid of texture images. For each sample, we decide
+			which level of pyramid it should sample color from, by looking at its uv gradients.
+			We have options of nearest or linear interpolation between levels since the level we 
+			calculated from its uv gradients could be float value instead of a integer.
+		</p></blockquote>
 
+		<p><b>You can now adjust your sampling technique by selecting pixel sampling, 
+			level sampling, or the number of samples per pixel. Describe the tradeoffs 
+			between speed, memory usage, and antialiasing power between the three 
+			various techniques.</b></p>
+		
+		<blockquote><p>
+			Increasing the number of samples per pixel causes a huge memory usage increase,
+			speed decrease. And it's effecive globally on all pixels.
+			Selecting pixel sampling and level sampling mode does not increase memory usage,
+			with slight speed decrease. The former one has affect globally on all images, 
+			whereas the latter one has only antialiasing affect on the regions that are supposed
+			to be smooth.
+		</p></blockquote>
 
-        <h2 align="middle">Section III: Art Competition</h2>
-        <p>If you are not participating in the optional art competition, don't worry about this section!</p>
+		<p><b>Using a png file you find yourself, show us four versions of the image, 
+			using the combinations of L_ZERO and P_NEAREST, L_ZERO and P_LINEAR, L_NEAREST 
+			and P_NEAREST, as well as L_NEAREST and P_LINEAR.</b></p>
 
-        <h3 align="middle">Part 7: Draw something interesting!</h3>
+			<div align="middle">
+				<table width="80%">
+					<tr>
+						<td>
+							<img src="images/task6.2.1.png" align="middle" width="400px" />
+							<figcaption align="middle">L_ZERO + P_NEAREST.</figcaption>
+						</td>
+						<td>
+							<img src="images/task6.2.2.png" align="middle" width="400px" />
+							<figcaption align="middle">L_ZERO + P_LINEAR.</figcaption>
+						</td>
+					</tr>
+					<br>
+					<tr>
+						<td>
+							<img src="images/task6.2.3.png" align="middle" width="400px" />
+							<figcaption align="middle">L_NEAREST + P_NEAREST.</figcaption>
+						</td>
+						<td>
+							<img src="images/task6.2.4.png" align="middle" width="400px" />
+							<figcaption align="middle">L_NEAREST + P_LINEAR.</figcaption>
+						</td>
+					</tr>
+				</table>
+			</div>
 
 </body>
 
