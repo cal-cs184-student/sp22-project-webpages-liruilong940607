@@ -1,7 +1,344 @@
-<html>
-	<head>
-	</head>
-	<body>
-		Project 2 here
-	</body>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+
+<head>
+    <style>
+        body {
+            padding: 100px;
+            width: 1000px;
+            margin: auto;
+            text-align: left;
+            font-weight: 300;
+            font-family: 'Open Sans', sans-serif;
+            color: #121212;
+        }
+        
+        h1,
+        h2,
+        h3,
+        h4 {
+            font-family: 'Source Sans Pro', sans-serif;
+        }
+
+		img {
+			border: 1px solid #555;
+		}
+    </style>
+    <title>CS 284 MeshEdit</title>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans|Source+Sans+Pro" rel="stylesheet">
+</head>
+
+
+<body>
+
+    <h1 align="middle">CS 184/284: Computer Graphics and Imaging, Spring 2022</h1>
+    <h1 align="middle">Project 2: MeshEdit</h1>
+    <h2 align="middle">Ruilong Li</h2>
+    <h2 align="middle">CS284 - 3037377380</h2>
+    <h2 align="middle">
+		<a href="https://cal-cs184-student.github.io/sp22-project-webpages-liruilong940607/proj2/">Website Link</a>
+	</h2>
+
+    <br><br>
+
+    <div>
+
+        <h2 align="middle">Overview</h2>
+
+        <!-- Give a high-level overview of what you implemented in this project. 
+        Think about what you've built as a whole. Share your thoughts on what 
+        interesting things you've learned from completing the project. -->
+        <p>
+            <!-- In this first assignment, I get familiar with how the vector format data 
+            (e.g. SVG images) is being drawn to the screen. It is superisingly 
+            interesting that the underlying representation of SVG images are actually
+            a bunch of triangles with colors or texture maps, similar to the 3D meshes. 
+            This assignment helps me to reveal the mystery on why some SVG images can 
+            be "infinite resolution" -- it's just rasterization of the colored triangles! -->
+        </p>
+
+        <p>
+            <!-- Besides, through the implementation of sub-pixel sampling, multi-level mipmaps
+            texture mapping etc, I get the chance to closely feel the visual differences
+            on the screen, with different underlying technologies. Really devil is in the
+            detail! A slight change could lead to a huge improvment towards visual pleasing. 
+            And like wise, a tiny bug could also cause unimaginable "art" results! -->
+        </p>
+
+        <h2 align="middle">Section I: Bezier Curves and Surfaces</h2>
+		
+		<!-- Task 1 -->
+        <h3 align="middle">Part 1: Bezier Curves with 1D de Casteljau Subdivision</h3>
+		
+		<p><b>I. Briefly explain de Casteljau's algorithm and how you implemented it in order to evaluate Bezier curves.</b></p>
+		<blockquote>
+			<p>
+			De Casteljau's algorithm is a way to evaluate polynomials in Bezier curves. It recursively compute the next 
+			level of n-1 control points, from the current n control points. Implementation wise, at each level, we 
+			interplate the on each edge using the t value to get the control point for next level.
+			</p>
+		</blockquote>
+		
+		<p><b>
+			II. Show screenshots of each step / level of the evaluation from the original control points down to the final evaluated point.
+		</b></p>
+		<div align="middle">
+            <table width="80%">
+                <tr>
+                    <td>
+                        <img src="images/1.1.png" align="middle" width="300px" />
+                        <figcaption align="middle">Initialization.</figcaption>
+                    </td>
+                    <td>
+                        <img src="images/1.2.png" align="middle" width="300px" />
+                        <figcaption align="middle">Step 1.</figcaption>
+                    </td>
+                    <td>
+                        <img src="images/1.3.png" align="middle" width="300px" />
+                        <figcaption align="middle">Step 2.</figcaption>
+                    </td>
+				</tr>
+				<br>
+				<tr>
+                    <td>
+                        <img src="images/1.4.png" align="middle" width="300px" />
+                        <figcaption align="middle">Step 3.</figcaption>
+                    </td>
+                    <td>
+                        <img src="images/1.5.png" align="middle" width="300px" />
+                        <figcaption align="middle">Step 4.</figcaption>
+                    </td>
+                    <td>
+                        <img src="images/1.6.png" align="middle" width="300px" />
+                        <figcaption align="middle">Step 5.</figcaption>
+                    </td>
+                </tr>
+            </table>
+        </div>
+			
+		<p><b>
+			III. Show a screenshot of a slightly different Bezier curve by moving the original 
+			control points around and modifying the parameter t via mouse scrolling.
+		</b></p>
+
+		<div align="middle">
+			<img src="images/1.7.png" align="middle" width="400px" />
+			<figcaption align="middle">
+				Bezier curve with a different t.
+			</figcaption>
+        </div>
+		
+		<!-- Task 2 -->
+        <h3 align="middle">Part 2: Bezier Surfaces with Separable 1D de Casteljau</h3>
+
+		<p><b>I. Briefly explain how de Casteljau algorithm extends to Bezier surfaces 
+			and how you implemented it in order to evaluate Bezier surfaces.
+		</b></p>
+		<blockquote><p>
+			A Bazier surface is just a 2D Bazier curve. So we first apply de Casteljau algorithm
+			to 1st dimension and reduce the 1st dimension to a single control point, then apply 
+			de Casteljau algorithm again on the 2nd dimension to get the final point. Implementation
+			wise, it is a first for-loop on the row-axis of the 2D control points, to reduce each row
+			of control points to a single one, then apply one more time of de Casteljau algorithm to
+			the col-axis to get the final point.
+		</p></blockquote>
+
+		<p><b>II. Show a screenshot of bez/teapot.bez (not .dae) evaluated by your implementation.
+		</b></p>
+
+		<div align="middle">
+			<img src="images/2.1.png" align="middle" width="400px" />
+			<figcaption align="middle">Teapot rendering.</figcaption>
+        </div>
+
+		<h2 align="middle">Section II: Triangle Meshes and Half-Edge Data Structure</h2>
+
+		<!-- Task 3 -->
+        <h3 align="middle">Part 3: Area-Weighted Vertex Normals</h3>
+
+		<p><b>Briefly explain how you implemented the area-weighted vertex normals.
+		</b></p>
+
+		<blockquote><p>
+			To calculate area-weighted vertex normals, we need to go through every faces around the
+			vertex. This can be done by following the Half-Edge: <em>do { h = h->twin()->next(); } while( h != halfedge() );</em>.
+			On every face, we calculate it's normal and area using the cross product on two edges. With all the area and normal vectors,
+			the final step is just a weighted sum.
+		</p></blockquote>
+
+		<p><b>Show screenshots of dae/teapot.dae (not .bez) comparing teapot shading with and without 
+			vertex normals. Use Q to toggle default flat shading and Phong shading.
+		</b></p>
+
+
+		<div align="middle">
+            <table width="70%">
+                <tr>
+                    <td>
+                        <img src="images/3.1.png" align="middle" width="400px" />
+                        <figcaption align="middle">Default flat shading.</figcaption>
+                    </td>
+                    <td>
+                        <img src="images/3.2.png" align="middle" width="400px" />
+                        <figcaption align="middle">Phong shading.</figcaption>
+                    </td>
+                </tr>
+            </table>
+        </div>
+
+		<!-- Task 4 -->
+        <h3 align="middle">Part 4: Edge Flip</h3>
+
+		<p><b>Briefly explain how you implemented the edge flip operation and describe any 
+			interesting implementation / debugging tricks you have used.
+		</b></p>
+		<blockquote><p>
+			The edge flip requires to consider every elements might be affected by this edge, including
+			2 faces, 4 vertices, 5 edges, 6 inner halfedges and 4 outer halfedges. The implementation is
+			relatively straight-forward: just go through every element and reassign the new properties to
+			them after the flip. The propoerties includes "next()", "twin()", "vertex()", "edge()", "faces()" and "halfedge()".
+			Not every element have all those propoerties but we basically refresh whatever propoerties they have.
+		</p></blockquote>
+
+		<p><b>Show screenshots of the teapot before and after some edge flips.
+		</b></p>
+		<div align="middle">
+            <table width="70%">
+                <tr>
+                    <td>
+                        <img src="images/4.0.png" align="middle" width="400px" />
+                        <figcaption align="middle">Before Edge Flip.</figcaption>
+                    </td>
+                    <td>
+                        <img src="images/4.1.png" align="middle" width="400px" />
+                        <figcaption align="middle">After Edge Flip.</figcaption>
+                    </td>
+                </tr>
+            </table>
+        </div>
+
+		<p><b>
+			Write about your eventful debugging journey, if you have experienced one.
+		</b></p>
+		<blockquote><p>
+			It is really helpful to first have a illustration image with all the elements
+			annotated on it! like this one: 
+			<a href="https://cmu-graphics.github.io/Scotty3D/meshedit/local/edge_flip_diagram.png"> illustration image </a>
+		</p></blockquote>
+
+		<!-- Task 5 -->
+        <h3 align="middle">Part 5: Edge Split</h3>
+
+		<p><b>Briefly explain how you implemented the edge split operation and describe any 
+			interesting implementation / debugging tricks you have used.
+		</b></p>
+
+		<blockquote><p>
+			TODO
+		</p></blockquote>
+
+		<p><b>Show screenshots of a mesh before and after some edge splits.
+		</b></p>
+
+		<div align="middle">
+            <table width="80%">
+                <tr>
+                    <td>
+                        <img src="images/task5.2.1.png" align="middle" width="400px" />
+                        <figcaption align="middle">Nearest sampling at 1 sample per pixel.</figcaption>
+                    </td>
+                    <td>
+                        <img src="images/task5.2.2.png" align="middle" width="400px" />
+                        <figcaption align="middle">Bilinear sampling at 1 sample per pixel.</figcaption>
+                    </td>
+                </tr>
+				<br>
+				<tr>
+                    <td>
+                        <img src="images/task5.2.2.png" align="middle" width="400px" />
+                        <figcaption align="middle">Nearest sampling at 16 samples per pixel.</figcaption>
+                    </td>
+                    <td>
+                        <img src="images/task5.2.4.png" align="middle" width="400px" />
+                        <figcaption align="middle">Bilinear sampling at 16 samples per pixel.</figcaption>
+                    </td>
+                </tr>
+            </table>
+        </div>
+
+		<p><b>Comment on the relative differences. Discuss when there will be a large 
+			difference between the two methods and why.
+		</b></p>
+
+		<blockquote><p>
+			The above images show a large difference on thin edges. When the texture map 
+			has high frequency details like thin edges, nearest sampling could easily give 
+			you a color that is totally different than what you want. On the contrary, bilinear
+			sampling on the texture map gives you an averaging color consider its surrounding,
+			reduce the peak error of the color.
+		</p></blockquote>
+
+
+        <h3 align="middle">Part 6: "Level sampling" with mipmaps for texture mapping</h3>
+
+		<p><b>Explain level sampling in your own words and describe how you implemented 
+			it for texture mapping.</b></p>
+	
+		<blockquote><p>
+			The idea of level sampling is that for the "smooth" regions, you would want to 
+			sample color on a low-res texture image for antialiasing. For the "sharp" regions,
+			you would want to sample color on a high-res texture image for clearness. Thus 
+			implementation wise we buffer a pyramid of texture images. For each sample, we decide
+			which level of pyramid it should sample color from, by looking at its uv gradients.
+			We have options of nearest or linear interpolation between levels since the level we 
+			calculated from its uv gradients could be float value instead of a integer.
+		</p></blockquote>
+
+		<p><b>You can now adjust your sampling technique by selecting pixel sampling, 
+			level sampling, or the number of samples per pixel. Describe the tradeoffs 
+			between speed, memory usage, and antialiasing power between the three 
+			various techniques.</b></p>
+		
+		<blockquote><p>
+			Increasing the number of samples per pixel causes a huge memory usage increase,
+			speed decrease. And it's effecive globally on all pixels.
+			Selecting pixel sampling and level sampling mode does not increase memory usage,
+			with slight speed decrease. The former one has affect globally on all images, 
+			whereas the latter one has only antialiasing affect on the regions that are supposed
+			to be smooth.
+		</p></blockquote>
+
+		<p><b>Using a png file you find yourself, show us four versions of the image, 
+			using the combinations of L_ZERO and P_NEAREST, L_ZERO and P_LINEAR, L_NEAREST 
+			and P_NEAREST, as well as L_NEAREST and P_LINEAR.</b></p>
+
+			<div align="middle">
+				<table width="80%">
+					<tr>
+						<td>
+							<img src="images/task6.2.1.png" align="middle" width="400px" />
+							<figcaption align="middle">L_ZERO + P_NEAREST.</figcaption>
+						</td>
+						<td>
+							<img src="images/task6.2.2.png" align="middle" width="400px" />
+							<figcaption align="middle">L_ZERO + P_LINEAR.</figcaption>
+						</td>
+					</tr>
+					<br>
+					<tr>
+						<td>
+							<img src="images/task6.2.3.png" align="middle" width="400px" />
+							<figcaption align="middle">L_NEAREST + P_NEAREST.</figcaption>
+						</td>
+						<td>
+							<img src="images/task6.2.4.png" align="middle" width="400px" />
+							<figcaption align="middle">L_NEAREST + P_LINEAR.</figcaption>
+						</td>
+					</tr>
+				</table>
+			</div>
+
+</body>
+
 </html>
