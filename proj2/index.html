@@ -196,7 +196,7 @@
 		<blockquote><p>
 			The edge flip requires to consider every elements might be affected by this edge, including
 			2 faces, 4 vertices, 5 edges, 6 inner halfedges and 4 outer halfedges. The implementation is
-			relatively straight-forward: just go through every element and reassign the new properties to
+			relatively brute-force: just go through every element and reassign the new properties to
 			them after the flip. The propoerties includes "next()", "twin()", "vertex()", "edge()", "faces()" and "halfedge()".
 			Not every element have all those propoerties but we basically refresh whatever propoerties they have.
 		</p></blockquote>
@@ -235,7 +235,9 @@
 		</b></p>
 
 		<blockquote><p>
-			TODO
+			Similar to the last task on edge flip, for the edge split we also brute-force on all elements
+			that can be affected, including those new elements being introduced. So in total we need to take
+			care 4 faces, 8 edges, 5 vertices and 16 halfedges. All the properties of those elements are updated.
 		</p></blockquote>
 
 		<p><b>Show screenshots of a mesh before and after some edge splits.
@@ -245,99 +247,157 @@
             <table width="80%">
                 <tr>
                     <td>
-                        <img src="images/task5.2.1.png" align="middle" width="400px" />
-                        <figcaption align="middle">Nearest sampling at 1 sample per pixel.</figcaption>
+                        <img src="images/5.1.png" align="middle" width="400px" />
+                        <figcaption align="middle">Before.</figcaption>
                     </td>
                     <td>
-                        <img src="images/task5.2.2.png" align="middle" width="400px" />
-                        <figcaption align="middle">Bilinear sampling at 1 sample per pixel.</figcaption>
-                    </td>
-                </tr>
-				<br>
-				<tr>
-                    <td>
-                        <img src="images/task5.2.2.png" align="middle" width="400px" />
-                        <figcaption align="middle">Nearest sampling at 16 samples per pixel.</figcaption>
-                    </td>
-                    <td>
-                        <img src="images/task5.2.4.png" align="middle" width="400px" />
-                        <figcaption align="middle">Bilinear sampling at 16 samples per pixel.</figcaption>
+                        <img src="images/5.2.png" align="middle" width="400px" />
+                        <figcaption align="middle">After edge splits.</figcaption>
                     </td>
                 </tr>
             </table>
         </div>
 
-		<p><b>Comment on the relative differences. Discuss when there will be a large 
-			difference between the two methods and why.
+		<p><b>Show screenshots of a mesh before and after a combination of both edge splits and edge flips.
 		</b></p>
 
 		<blockquote><p>
-			The above images show a large difference on thin edges. When the texture map 
-			has high frequency details like thin edges, nearest sampling could easily give 
-			you a color that is totally different than what you want. On the contrary, bilinear
-			sampling on the texture map gives you an averaging color consider its surrounding,
-			reduce the peak error of the color.
+			Note: I accidentally dragged a vertex on the surface.
+		</p></blockquote>
+
+		<div align="middle">
+            <table width="80%">
+                <tr>
+                    <td>
+                        <img src="images/5.3.png" align="middle" width="400px" />
+                        <figcaption align="middle">Before.</figcaption>
+                    </td>
+                    <td>
+                        <img src="images/5.4.png" align="middle" width="400px" />
+                        <figcaption align="middle">After edge splits and edge flips.</figcaption>
+                    </td>
+                </tr>
+            </table>
+        </div>
+
+		<p><b>Write about your eventful debugging journey, if you have experienced one.
+		</b></p>
+
+		<blockquote><p>
+			Same as the last task, having a illustration with all the anotations really helps:
+			<a href="https://ceciliavision.github.io/graphics/a2/images/split.png"> illustration image </a>
 		</p></blockquote>
 
 
-        <h3 align="middle">Part 6: "Level sampling" with mipmaps for texture mapping</h3>
+        <h3 align="middle">Part 6: Loop Subdivision for Mesh Upsampling</h3>
 
-		<p><b>Explain level sampling in your own words and describe how you implemented 
-			it for texture mapping.</b></p>
+		<p><b>Briefly explain how you implemented the loop subdivision and describe any 
+			interesting implementation / debugging tricks you have used.</b></p>
 	
 		<blockquote><p>
-			The idea of level sampling is that for the "smooth" regions, you would want to 
-			sample color on a low-res texture image for antialiasing. For the "sharp" regions,
-			you would want to sample color on a high-res texture image for clearness. Thus 
-			implementation wise we buffer a pyramid of texture images. For each sample, we decide
-			which level of pyramid it should sample color from, by looking at its uv gradients.
-			We have options of nearest or linear interpolation between levels since the level we 
-			calculated from its uv gradients could be float value instead of a integer.
+			We implemented following the recommendation way, which is to first loop all the 
+			edges and calculate the positions of the new vertices to be added. Then loop all
+			the vertices to calculate the new positions of those old vertices. Next step is 
+			to loop all the old edges and split them. The final step is to loop on all the edges 
+			of the mesh again, in which we examine the if the new edges are connecting the old
+			and new vertices. During the implementation, the <em>isNew</em> field is being used
+			and tracked for all vertices and edges to distinguish new ones verse old ones.
 		</p></blockquote>
 
-		<p><b>You can now adjust your sampling technique by selecting pixel sampling, 
-			level sampling, or the number of samples per pixel. Describe the tradeoffs 
-			between speed, memory usage, and antialiasing power between the three 
-			various techniques.</b></p>
+		<p><b>Take some notes, as well as some screenshots, of your observations on how meshes 
+			behave after loop subdivision. What happens to sharp corners and edges? Can you 
+			reduce this effect by pre-splitting some edges?.</b></p>
 		
 		<blockquote><p>
-			Increasing the number of samples per pixel causes a huge memory usage increase,
-			speed decrease. And it's effecive globally on all pixels.
-			Selecting pixel sampling and level sampling mode does not increase memory usage,
-			with slight speed decrease. The former one has affect globally on all images, 
-			whereas the latter one has only antialiasing affect on the regions that are supposed
-			to be smooth.
+			The sharp corners and edges are being smoothed out. The reason is that the weighted 
+			averaging on the new vertices and old vertices destroies sharpness. If we do pre-splitting
+			on some edges, it is less smooth but still not sharp enough.
 		</p></blockquote>
 
-		<p><b>Using a png file you find yourself, show us four versions of the image, 
-			using the combinations of L_ZERO and P_NEAREST, L_ZERO and P_LINEAR, L_NEAREST 
-			and P_NEAREST, as well as L_NEAREST and P_LINEAR.</b></p>
+		<div align="middle">
+			<table width="80%">
+				<tr>
+					<td>
+						<img src="images/6.2.png" align="middle" width="400px" />
+						<figcaption align="middle">Raw Mesh.</figcaption>
+					</td>
+					<td>
+						<img src="images/6.4.png" align="middle" width="400px" />
+						<figcaption align="middle">Subdivision twice.</figcaption>
+					</td>
+				</tr>
+				<br>
+				<tr>
+					<td>
+						<img src="images/6.10.png" align="middle" width="400px" />
+						<figcaption align="middle">Raw Mesh.</figcaption>
+					</td>
+					<td>
+						<img src="images/6.11.png" align="middle" width="400px" />
+						<figcaption align="middle">Subdivision twice.</figcaption>
+					</td>
+				</tr>
+				<br>
+				<tr>
+					<td>
+						<img src="images/6.13.png" align="middle" width="400px" />
+						<figcaption align="middle">Raw Mesh with Pre-splitting.</figcaption>
+					</td>
+					<td>
+						<img src="images/6.14.png" align="middle" width="400px" />
+						<figcaption align="middle">Subdivision twice.</figcaption>
+					</td>
+				</tr>
+			</table>
+		</div>
 
-			<div align="middle">
-				<table width="80%">
-					<tr>
-						<td>
-							<img src="images/task6.2.1.png" align="middle" width="400px" />
-							<figcaption align="middle">L_ZERO + P_NEAREST.</figcaption>
-						</td>
-						<td>
-							<img src="images/task6.2.2.png" align="middle" width="400px" />
-							<figcaption align="middle">L_ZERO + P_LINEAR.</figcaption>
-						</td>
-					</tr>
-					<br>
-					<tr>
-						<td>
-							<img src="images/task6.2.3.png" align="middle" width="400px" />
-							<figcaption align="middle">L_NEAREST + P_NEAREST.</figcaption>
-						</td>
-						<td>
-							<img src="images/task6.2.4.png" align="middle" width="400px" />
-							<figcaption align="middle">L_NEAREST + P_LINEAR.</figcaption>
-						</td>
-					</tr>
-				</table>
-			</div>
+		<p><b>
+			Load dae/cube.dae. Perform several iterations of loop subdivision on the cube. 
+			Notice that the cube becomes slightly asymmetric after repeated subdivisions.
+			Can you pre-process the cube with edge flips and splits so that the cube subdivides 
+			symmetrically? Document these effects and explain why they occur. Also explain how your 
+			pre-processing helps alleviate the effects.
+		</b></p>
+		
+		<blockquote><p>
+			The reason for asymmetric is that the topology of the mesh itself is not symmetric. A simple
+			fix can be pre-splitting every plane of the cube into four equal triangles, which makes the 
+			topology of the cube to be symmetric, as shown below.
+		</p></blockquote>
+
+		<div align="middle">
+			<table width="80%">
+				<tr>
+					<td>
+						<img src="images/6.5.png" align="middle" width="300px" />
+						<figcaption align="middle">Raw Mesh.</figcaption>
+					</td>
+					<td>
+						<img src="images/6.7.png" align="middle" width="300px" />
+						<figcaption align="middle">Subdivision twice.</figcaption>
+					</td>
+					<td>
+						<img src="images/6.9.png" align="middle" width="300px" />
+						<figcaption align="middle">Subdivision four times.</figcaption>
+					</td>
+				</tr>
+				<br>
+				<tr>
+					<td>
+						<img src="images/6.15.png" align="middle" width="300px" />
+						<figcaption align="middle">Raw Mesh with Pre-splitting.</figcaption>
+					</td>
+					<td>
+						<img src="images/6.16.png" align="middle" width="300px" />
+						<figcaption align="middle">Subdivision twice.</figcaption>
+					</td>
+					<td>
+						<img src="images/6.17.png" align="middle" width="300px" />
+						<figcaption align="middle">Subdivision four times.</figcaption>
+					</td>
+				</tr>
+			</table>
+		</div>
 
 </body>
 
