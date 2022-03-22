@@ -1,7 +1,452 @@
-<html>
-	<head>
-	</head>
-	<body>
-		Project 3-1 here
-	</body>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+
+<head>
+    <style>
+        body {
+            padding: 100px;
+            width: 1000px;
+            margin: auto;
+            text-align: left;
+            font-weight: 300;
+            font-family: 'Open Sans', sans-serif;
+            color: #121212;
+        }
+        
+        h1,
+        h2,
+        h3,
+        h4 {
+            font-family: 'Source Sans Pro', sans-serif;
+        }
+
+		img {
+			border: 1px solid #555;
+		}
+
+		.text-table {
+			border: 1px solid black;
+		}
+    </style>
+    <title>CS 184 Assignment 3-1</title>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans|Source+Sans+Pro" rel="stylesheet">
+</head>
+
+
+<body>
+
+    <h1 align="middle">CS 184/284: Computer Graphics and Imaging, Spring 2022</h1>
+    <h1 align="middle">Assignment 3-1</h1>
+    <h2 align="middle">Ruilong Li</h2>
+    <h2 align="middle">CS284 - 3037377380</h2>
+    <h2 align="middle">
+		<a href="https://cal-cs184-student.github.io/sp22-project-webpages-liruilong940607/proj3/">Website Link</a>
+	</h2>
+
+    <br><br>
+
+    <div>
+
+        <h2 align="middle">Overview</h2>
+
+        <!-- Give a high-level overview of what you implemented in this project. 
+        Think about what you've built as a whole. Share your thoughts on what 
+        interesting things you've learned from completing the project. -->
+        <p>
+            This assignment goes through a basic ray tracing process for 3D scene rendering.
+			It covers generating rays on the image plane; calculating the ray-triangle,
+			ray-sphere, ray-bbox intersections; direction and indirect illuminations; as well
+			as some necessary acceleration algorithms such as BVH structure and adaptive sampling.
+        </p>
+
+		<!-- Task 1 -->
+        <h2 align="middle">Part I: Ray Generation and Scene Intersection</h2>
+		
+		<p><b>I. Walk through the ray generation and primitive intersection parts of the rendering pipeline..</b></p>
+		<blockquote>
+			<p>
+				As what we care is the final image shown on the screen, we generate rays based on the pixels on the image plane.
+				For each pixel, we create a ray that starts from the camera location and passes that pixel in the 3D world. For 
+				simplicity, it is first created in the camera space where the camera is at the origin, then transformed into the 
+				world space using camera rotation and translation. 
+			</p>
+			<p>
+				The ray-primitive intersection follows a simple rule: for each ray, we only care about the intersction 
+				in the very front. So everytime we find a intersection, we update the t_max value of the ray so that the following
+				intersection tests only consider the regions in the front of the current nearest intersection. 
+			</p>	
+		</blockquote>
+		
+		<p><b>
+			II. Explain the triangle intersection algorithm you implemented in your own words.
+		</b></p>
+		<blockquote>
+			<p>In my implementation, I first calculate the ray-plane intersection, then calculate the barycentric coordinates
+				of the intersection point to see if the point is inside the triangle. Other than the barycentric test, it is also
+				needed to examine whether it is with in the (t_min, t_max) range of the ray.
+			</p>
+		</blockquote>
+			
+		<p><b>
+			III. Show images with normal shading for a few small .dae files.
+		</b></p>
+
+		<div align="middle">
+            <table width="80%">
+                <tr>
+                    <td>
+                        <img src="images/part1/CBempty.png" align="middle" width="400px" />
+                        <figcaption align="middle">CBempty.</figcaption>
+                    </td>
+                    <td>
+                        <img src="images/part1/CBspheres.png" align="middle" width="400px" />
+                        <figcaption align="middle">CBspheres.</figcaption>
+                    </td>
+                </tr>
+            </table>
+        </div>
+		
+		<!-- Task 2 -->
+        <h3 align="middle">Part 2: Bounding Volume Hierarchy</h3>
+
+		<p><b>I. Walk through your BVH construction algorithm. Explain the heuristic you chose for picking the splitting point.
+		</b></p>
+		<blockquote><p>
+			We start from the root node of the BVH, which contains all the primitives. The next level of BVH is constructed by
+			spatially splitting all the primitives into two sets (allowing small overlaps). We use the middle point of the bbox
+			as the splitting point. As there are three axis, we evaluate each axis and choose the one with the most balance split 
+			(left right ratio near to 1:1). The entire BVH is constructed recursively from node to the leaves.
+		</p></blockquote>
+
+		<p><b>II. Show images with normal shading for a few large .dae files that you can only render with BVH acceleration.
+		</b></p>
+
+		<div align="middle">
+            <table width="100%">
+                <tr>
+                    <td>
+                        <img src="images/part2/cow.png" align="middle" width="300px" />
+                        <figcaption align="middle">Cow.</figcaption>
+                    </td>
+                    <td>
+                        <img src="images/part2/CBlucy.png" align="middle" width="300px" />
+                        <figcaption align="middle">CBlucy.</figcaption>
+                    </td>
+					<td>
+                        <img src="images/part2/maxplanck.png" align="middle" width="300px" />
+                        <figcaption align="middle">Maxplanck.</figcaption>
+                    </td>
+                </tr>
+            </table>
+        </div>
+		
+
+		<p><b>III. Compare rendering times on a few scenes with moderately complex geometries 
+			with and without BVH acceleration. Present your results in a one-paragraph analysis.
+		</b></p>
+
+		<div align="middle">
+            <table width="60%", class="text-table">
+                <tr>
+                    <td class="text-table">Scenes</td>
+                    <td class="text-table">Cow</td>
+                    <td class="text-table">CBlucy</td>
+                    <td class="text-table">Maxplanck</td>
+                </tr>
+                <tr>
+                    <td class="text-table">Basic Rendering (sec)</td>
+                    <td class="text-table">18.9178</td>
+                    <td class="text-table">537.4177</td>
+                    <td class="text-table">158.9119</td>
+                </tr>
+                <tr>
+                    <td class="text-table">BVH Rendering (sec)</td>
+					<td class="text-table">0.0453</td>
+                    <td class="text-table">0.0466</td>
+                    <td class="text-table">0.1164</td>
+                </tr>
+            </table>
+        </div>
+
+
+		<!-- Task 3 -->
+        <h3 align="middle">Part 3: Direct Illumination</h3>
+
+		<p><b>I. Walk through both implementations of the direct lighting function.
+		</b></p>
+
+		<blockquote><p>
+			The main difference of the two direct lighting algorithms, lies in whether we apply
+			MC sampling to the light sources or the surface point. For the "Uniform Hemisphere Sampling",
+			we sample rays at the surface point and test if those rays intersect with the light source objects.
+			Hemisphere sampling is used on the surface point and whenever the ray hits an light source, the 
+			emission of that light source is accumulated using the reflection equation. 
+			Apperantly this will miss those point lights. The other algorithm "Importance Sampling Lights" instead
+			sample rays from the light sources. For the point lights, a single ray is tested between the light 
+			source and the surface point. As long as there is no obstacles in between, the emission of this light
+			source counts.
+		</p></blockquote>
+
+		<p><b>II. Show some images rendered with both implementations of the direct lighting function.
+		</b></p>
+
+		<div align="middle">
+            <table width="70%">
+                <tr>
+                    <td>
+                        <img src="images/part3/dragon_64_32.png" align="middle" width="400px" />
+                        <figcaption align="middle">Dragon with Uniform Hemisphere Sampling.</figcaption>
+                    </td>
+                    <td>
+                        <img src="images/part3/dragon_64_32_h.png" align="middle" width="400px" />
+                        <figcaption align="middle">Dragon with Importance Sampling Lights.</figcaption>
+                    </td>
+                </tr>
+				<tr>
+                    <td>
+                        <img src="images/part3/bunny_64_32.png" align="middle" width="400px" />
+                        <figcaption align="middle">Bunny with Uniform Hemisphere Sampling.</figcaption>
+                    </td>
+                    <td>
+                        <img src="images/part3/bunny_64_32_h.png" align="middle" width="400px" />
+                        <figcaption align="middle">Bunny with Importance Sampling Lights.</figcaption>
+                    </td>
+                </tr>
+            </table>
+        </div>
+
+		<p><b>III. Focus on one particular scene with at least one area light and compare the noise levels in soft shadows 
+			when rendering with 1, 4, 16, and 64 light rays (the -l flag) and with 1 sample per pixel (the -s flag) using 
+			light sampling, not uniform hemisphere sampling.
+		</b></p>
+
+		<div align="middle">
+            <table width="70%">
+                <tr>
+                    <td>
+                        <img src="images/part3/bunny_1_1.png" align="middle" width="400px" />
+                        <figcaption align="middle">1 light rays.</figcaption>
+                    </td>
+                    <td>
+                        <img src="images/part3/bunny_1_4.png" align="middle" width="400px" />
+                        <figcaption align="middle">4 light rays.</figcaption>
+                    </td>
+                </tr>
+				<tr>
+                    <td>
+                        <img src="images/part3/bunny_1_16.png" align="middle" width="400px" />
+                        <figcaption align="middle">16 light rays.</figcaption>
+                    </td>
+                    <td>
+                        <img src="images/part3/bunny_1_64.png" align="middle" width="400px" />
+                        <figcaption align="middle">64 light rays.</figcaption>
+                    </td>
+                </tr>
+            </table>
+        </div>
+
+		<p><b>IV. Compare the results between uniform hemisphere sampling and lighting sampling in a one-paragraph analysis.
+		</b></p>
+
+		<blockquote><p>
+			Here we compare results of those two sampling methos with 1, 4, 16 rays and with 1 sample per pixel
+			on the bunny scene.
+		</p></blockquote>
+
+		<div align="middle">
+            <table width="70%">
+                <tr>
+                    <td>
+                        <img src="images/part3/bunny_1_1.png" align="middle" width="300px" />
+                        <figcaption align="middle">1 light rays (lighting).</figcaption>
+                    </td>
+                    <td>
+                        <img src="images/part3/bunny_1_4.png" align="middle" width="300px" />
+                        <figcaption align="middle">4 light rays (lighting).</figcaption>
+                    </td>
+					<td>
+                        <img src="images/part3/bunny_1_16.png" align="middle" width="300px" />
+                        <figcaption align="middle">16 light rays (lighting).</figcaption>
+                    </td>
+                </tr>
+				<tr>
+                    <td>
+                        <img src="images/part3/bunny_1_1_h.png" align="middle" width="300px" />
+                        <figcaption align="middle">1 light rays (hemisphere).</figcaption>
+                    </td>
+                    <td>
+                        <img src="images/part3/bunny_1_4_h.png" align="middle" width="300px" />
+                        <figcaption align="middle">4 light rays (hemisphere).</figcaption>
+                    </td>
+					<td>
+                        <img src="images/part3/bunny_1_16_h.png" align="middle" width="300px" />
+                        <figcaption align="middle">16 light rays (hemisphere).</figcaption>
+                    </td>
+                </tr>
+            </table>
+        </div>
+
+
+		<!-- Task 4 -->
+        <h3 align="middle">Part 4: Global Illumination</h3>
+
+		<p><b>I. Walk through your implementation of the indirect lighting function.
+		</b></p>
+		<blockquote><p>
+			Indirect lighting comes from the multiple bounces of a ray between different objects.
+			It is implemented through recursion for the extra bounces at the surface points. At 
+			each step, an incident light direction is sampled at the bounce point given the outgoing
+			light direction. The emission is calculated and accumulated using reflection equation. The
+			recursion stops when the bounced ray does not hit any objects or maximum bounces have been
+			reached, or russian roulette happens. 
+		</p></blockquote>
+
+
+		<p><b>II. Show some images rendered with global (direct and indirect) illumination. Use 1024 samples per pixel.
+		</b></p>
+		<div align="middle">
+            <table width="100%">
+                <tr>
+                    <td>
+                        <img src="images/part4/spheres_1024_16_m5.png" align="middle" width="300px" />
+                        <figcaption align="middle">Spheres (s=1024, l=16, m=5).</figcaption>
+                    </td>
+                    <td>
+                        <img src="images/part4/lucy_1024_16_m5.png" align="middle" width="300px" />
+                        <figcaption align="middle">Lucy (s=1024, l=16, m=5).</figcaption>
+                    </td>
+					<td>
+                        <img src="images/part4/coil_1024_16_m5.png" align="middle" width="300px" />
+                        <figcaption align="middle">Coil (s=1024, l=16, m=5).</figcaption>
+                    </td>
+                </tr>
+            </table>
+        </div>
+
+		<p><b>III. Pick one scene and compare rendered views first with only direct illumination, 
+			then only indirect illumination. Use 1024 samples per pixel.
+		</b></p>
+		<div align="middle">
+            <table width="100%">
+                <tr>
+                    <td>
+                        <img src="images/part4/spheres_1024_16_m5_direct.png" align="middle" width="300px" />
+                        <figcaption align="middle">Spheres only direct (s=1024, l=16, m=5).</figcaption>
+                    </td>
+                    <td>
+                        <img src="images/part4/spheres_1024_16_m5_indirect.png" align="middle" width="300px" />
+                        <figcaption align="middle">Spheres only indirect (s=1024, l=16, m=5).</figcaption>
+                    </td>
+                </tr>
+            </table>
+        </div>
+
+		<p><b>IV. For CBbunny.dae, compare rendered views with max_ray_depth set to 0, 1, 2, 3, and 100 (the -m flag). Use 1024 samples per pixel.
+		</b></p>
+		<div align="middle">
+            <table width="100%">
+                <tr>
+                    <td>
+                        <img src="images/part4/bunny_1024_16_m0.png" align="middle" width="300px" />
+                        <figcaption align="middle">Bunny (s=1024, l=16, m=0).</figcaption>
+                    </td>
+                    <td>
+                        <img src="images/part4/bunny_1024_16_m1.png" align="middle" width="300px" />
+                        <figcaption align="middle">Bunny (s=1024, l=16, m=1).</figcaption>
+                    </td>
+                    <td>
+                        <img src="images/part4/bunny_1024_16_m2.png" align="middle" width="300px" />
+                        <figcaption align="middle">Bunny (s=1024, l=16, m=2).</figcaption>
+                    </td>
+				</tr>
+				<tr>
+                    <td>
+                        <img src="images/part4/bunny_1024_16_m3.png" align="middle" width="300px" />
+                        <figcaption align="middle">Bunny (s=1024, l=16, m=3).</figcaption>
+                    </td>
+                    <td>
+                        <img src="images/part4/bunny_1024_16_m100.png" align="middle" width="300px" />
+                        <figcaption align="middle">Bunny (s=1024, l=16, m=100).</figcaption>
+                    </td>
+                </tr>
+            </table>
+        </div>
+		
+
+		<p><b>V. Pick one scene and compare rendered views with various sample-per-pixel rates, 
+			including at least 1, 2, 4, 8, 16, 64, and 1024. Use 4 light rays.
+		</b></p>
+		<div align="middle">
+            <table width="100%">
+                <tr>
+                    <td>
+                        <img src="images/part4/dragon_1_4_m3.png" align="middle" width="300px" />
+                        <figcaption align="middle">Dragon (s=1, l=4, m=3).</figcaption>
+                    </td>
+                    <td>
+                        <img src="images/part4/dragon_2_4_m3.png" align="middle" width="300px" />
+                        <figcaption align="middle">Dragon (s=2, l=4, m=3).</figcaption>
+                    </td>
+                    <td>
+                        <img src="images/part4/dragon_4_4_m3.png" align="middle" width="300px" />
+                        <figcaption align="middle">Dragon (s=4, l=4, m=3).</figcaption>
+                    </td>
+				</tr>
+				<tr>
+                    <td>
+                        <img src="images/part4/dragon_8_4_m3.png" align="middle" width="300px" />
+                        <figcaption align="middle">Dragon (s=8, l=4, m=3).</figcaption>
+                    </td>
+                    <td>
+                        <img src="images/part4/dragon_64_4_m3.png" align="middle" width="300px" />
+                        <figcaption align="middle">Dragon (s=64, l=4, m=3).</figcaption>
+                    </td>
+                    <td>
+                        <img src="images/part4/dragon_1024_4_m3.png" align="middle" width="300px" />
+                        <figcaption align="middle">Dragon (s=1024, l=4, m=3).</figcaption>
+                    </td>
+                </tr>
+            </table>
+        </div>
+		
+
+
+		<!-- Task 5 -->
+        <h3 align="middle">Part 5: Adaptive Sampling</h3>
+
+		<p><b>I. Walk through your implementation of the adaptive sampling.
+		</b></p>
+
+		<blockquote><p>
+			The idea of adaptive sampling is to stop the sampling for a pixel if the radiance of
+			that pixel converges during sampling. Implementation wise, we trace two variables s1 and s2
+			for the mean and variance of the radiance. To speed up, we check every maxTolerance samples
+			where the radiance converges to the 95% confidence interval range. 
+		</p></blockquote>
+
+		<p><b>II. Pick one scene and render it with at least 2048 samples per pixel. 
+			Show a good sampling rate image with clearly visible differences in sampling rate over 
+			various regions and pixels. Include both your sample rate image, which shows your how 
+			your adaptive sampling changes depending on which part of the image you are rendering, 
+			and your noise-free rendered result. Use 1 sample per light and at least 5 for max ray depth.
+		</b></p>
+
+		<div align="middle">
+			<table width="80%">
+				<tr>
+					<td>
+						<img src="images/part5/bunny.png" align="middle" width="400px" />
+						<figcaption align="middle">Bunny.</figcaption>
+					</td>
+					<td>
+						<img src="images/part5/bunny_rate.png" align="middle" width="400px" />
+						<figcaption align="middle">Bunny Sampling Rate.</figcaption>
+					</td>
+				</tr>
+			</table>
+		</div>
+
+</body>
+
 </html>
