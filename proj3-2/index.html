@@ -1,7 +1,267 @@
-<html>
-	<head>
-	</head>
-	<body>
-		Project 3-2 here
-	</body>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+
+<head>
+    <style>
+        body {
+            padding: 100px;
+            width: 1000px;
+            margin: auto;
+            text-align: left;
+            font-weight: 300;
+            font-family: 'Open Sans', sans-serif;
+            color: #121212;
+        }
+        
+        h1,
+        h2,
+        h3,
+        h4 {
+            font-family: 'Source Sans Pro', sans-serif;
+        }
+
+		img {
+			border: 1px solid #555;
+		}
+
+		.text-table {
+			border: 1px solid black;
+		}
+    </style>
+    <title>CS 184 Assignment 3-2</title>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans|Source+Sans+Pro" rel="stylesheet">
+</head>
+
+
+<body>
+
+    <h1 align="middle">CS 184/284: Computer Graphics and Imaging, Spring 2022</h1>
+    <h1 align="middle">Assignment 3-2</h1>
+    <h2 align="middle">Ruilong Li</h2>
+    <h2 align="middle">CS284 - 3037377380</h2>
+    <h2 align="middle">
+		<a href="https://cal-cs184-student.github.io/sp22-project-webpages-liruilong940607/proj3-2/">Website Link</a>
+	</h2>
+
+    <br><br>
+
+    <div>
+
+        <!-- <h2 align="middle">Overview</h2> -->
+
+        <!-- Give a high-level overview of what you implemented in this project. 
+        Think about what you've built as a whole. Share your thoughts on what 
+        interesting things you've learned from completing the project. -->
+        <!-- <p> -->
+            <!-- This assignment goes through a basic ray tracing process for 3D scene rendering.
+			It covers generating rays on the image plane; calculating the ray-triangle,
+			ray-sphere, ray-bbox intersections; direction and indirect illuminations; as well
+			as some necessary acceleration algorithms such as BVH structure and adaptive sampling. -->
+        <!-- </p> -->
+
+		<!-- Task 1 -->
+        <h2 align="middle">Part 1: Mirror and Glass Materials</h2>
+		
+		<blockquote>
+			<p>
+				In this part, we first implemented the reflection and refraction BSDF. In the object coordinate space, the reflection
+				of a input ray is to simply inverse its x and y coordinates (z is the normal direction). For the refraction, we need to
+				count in the refractive index of the material and whether the ray is entering or exiting the material. Aside from the ray
+				direction change during refraction, we also need to count in the transmittance change (divided by eta^2) caused by different
+				materials. Based on these two basic BSDF, we further implemented the BSDF for mirror and glass materials.
+			</p>
+		</blockquote>
+
+		<p><b>
+			I. Show a sequence of images of scene CBspheres.dae rendered with max_ray_depth set to 0, 1, 2, 3, 4, 5, and 100. 
+			The other settings should be at least 64 samples per pixel and 4 samples per light.
+		</b></p>
+		<blockquote>
+			<p>
+				Below we show the seven images with different max_ray_depth on scene CBspheres.dae. The command we used to render
+				them are as follows:
+			</p>
+			<code>
+				./pathtracer -t 8 -s 256 -l 4 -m $max_ray_depth -r 480 360 -f sphere_m$max_ray_depth.png ../dae/sky/CBspheres.dae
+			</code>
+		</blockquote>
+		<div align="middle">
+            <table width="100%">
+                <tr>
+                    <td>
+                        <img src="images/sphere_m0.png" align="middle" width="300px" />
+                        <figcaption align="middle">max_ray_depth=0.</figcaption>
+                    </td>
+                    <td>
+                        <img src="images/sphere_m1.png" align="middle" width="300px" />
+                        <figcaption align="middle">max_ray_depth=1.</figcaption>
+                    </td>
+					<td>
+                        <img src="images/sphere_m2.png" align="middle" width="300px" />
+                        <figcaption align="middle">max_ray_depth=2.</figcaption>
+                    </td>
+                </tr>
+				<tr>
+                    <td>
+                        <img src="images/sphere_m3.png" align="middle" width="300px" />
+                        <figcaption align="middle">max_ray_depth=3.</figcaption>
+                    </td>
+                    <td>
+                        <img src="images/sphere_m4.png" align="middle" width="300px" />
+                        <figcaption align="middle">max_ray_depth=4.</figcaption>
+                    </td>
+					<td>
+                        <img src="images/sphere_m5.png" align="middle" width="300px" />
+                        <figcaption align="middle">max_ray_depth=5.</figcaption>
+                    </td>
+                </tr>
+				<tr>
+                    <td>
+                        <img src="images/sphere_m100.png" align="middle" width="300px" />
+                        <figcaption align="middle">max_ray_depth=100.</figcaption>
+                    </td>
+                </tr>
+            </table>
+        </div>
+		
+
+
+
+		
+		<p><b>
+			II. Point out the new multibounce effects that appear in each image.
+		</b></p>
+		<div align="middle">
+            <table width="100%">
+                <tr>
+                    <td>
+                        <img src="images/sphere_m0_2.png" align="middle" width="300px" />
+                        <figcaption align="middle">max_ray_depth=0</figcaption>
+                    </td>
+                    <td>
+                        <img src="images/sphere_m1_2.png" align="middle" width="300px" />
+                        <figcaption align="middle">max_ray_depth=1</figcaption>
+                    </td>
+					<td>
+                        <img src="images/sphere_m2_2.png" align="middle" width="300px" />
+                        <figcaption align="middle">max_ray_depth=2</figcaption>
+                    </td>
+                </tr>
+				<tr>
+                    <td>
+                        <img src="images/sphere_m3_2.png" align="middle" width="300px" />
+                        <figcaption align="middle">max_ray_depth=3</figcaption>
+                    </td>
+                    <td>
+                        <img src="images/sphere_m4_2.png" align="middle" width="300px" />
+                        <figcaption align="middle">max_ray_depth=4</figcaption>
+                    </td>
+                </tr>
+            </table>
+        </div>
+
+
+
+			
+		<p><b>
+			III. Explain how these bounce numbers relate to the particular effects that appear.
+		</b></p>
+		<blockquote>
+			<p>
+				With zero bounce, we can only see the light source. With max 1 bounce, we can then see the walls, and the reflection
+				on the light source on the spheres. With max 2 bounces, the spheres can receive the reflected rays from the ray and bounce 
+				them to the camera so we can see the wall reflection on the spheres. With max 3 bounces, the rays can bounce on the walls, enter
+				the sphere and exiting it, so we can see the color of the scene through the right sphere from refraction. With max 4 bounces, the 
+				rays exiting the sphere can further reflect on another sphere, makes us be able to see the right sphere inside the left one.
+			</p>
+		</blockquote>
+		
+		<!-- Task 2 -->
+        <h2 align="middle">Part 4: Depth of Field</h3>
+
+		<p><b>I. In a few sentences, explain the differences between a pinhole camera model and a thin-lens camera model.
+		</b></p>
+		<blockquote><p>
+			The pinhole camera is a simplified version of a thin-lens camera, where the size of the lens is zero. For a pinhole
+			camera, the rays a single pixel received, all go through "the center of the lens" so they are perfectly intersected everywhere
+			in the space, meaning everything is in focus. When the lens have a size larger than zero, the rays that a single pixel received
+			only intersected on a single point (a.k.a focus point of the lens). So there will be regions in the space that are unfocused thus
+			blurry on the image plane.
+		</p></blockquote>
+
+		<p><b>II. Show a "focus stack" where you focus at 4 visibly different depths through a scene.
+		</b></p>
+		<blockquote>
+			<p>
+				Different depths result different focus regions in the image.
+				The command we used to render them are as follows:
+			</p>
+			<code>
+				./pathtracer -b $depth -t 8 -s 1024 -l 8 -m 8 -r 480 360 -f dragon_b$depth.png ../dae/sky/CBdragon.dae
+			</code>
+		</blockquote>
+		<div align="middle">
+            <table width="90%">
+                <tr>
+                    <td>
+                        <img src="images/dragon_d4.0.png" align="middle" width="400px" />
+                        <figcaption align="middle">Depth=4.0</figcaption>
+                    </td>
+                    <td>
+                        <img src="images/dragon_d4.5.png" align="middle" width="400px" />
+                        <figcaption align="middle">Depth=4.5</figcaption>
+                    </td>
+                </tr>
+				<tr>
+                    <td>
+                        <img src="images/dragon_d5.0.png" align="middle" width="400px" />
+                        <figcaption align="middle">Depth=5.0</figcaption>
+                    </td>
+					<td>
+                        <img src="images/dragon_d5.5.png" align="middle" width="400px" />
+                        <figcaption align="middle">Depth=5.5</figcaption>
+                    </td>
+                </tr>
+            </table>
+        </div>
+		
+		<p><b>II. Show a sequence of 4 pictures with visibly different aperture sizes, all focused at the same point in a scene.
+		</b></p>
+		<blockquote>
+			<p>
+				Larger aperture size causes the rays to be more easily unfocused, resulting more regions to be more blurry on the
+				image plane.
+				The command we used to render them are as follows:
+			</p>
+			<code>
+				./pathtracer -b $size -d 4 -t 8 -s 1024 -l 8 -m 8 -r 480 360 -f dragon_d$size.png ../dae/sky/CBdragon.dae
+			</code>
+		</blockquote>
+		<div align="middle">
+            <table width="90%">
+                <tr>
+                    <td>
+                        <img src="images/dragon_b0.0.png" align="middle" width="400px" />
+                        <figcaption align="middle">Size=0.0</figcaption>
+                    </td>
+                    <td>
+                        <img src="images/dragon_b0.2.png" align="middle" width="400px" />
+                        <figcaption align="middle">Size=0.2</figcaption>
+                    </td>
+                </tr>
+				<tr>
+                    <td>
+                        <img src="images/dragon_b0.5.png" align="middle" width="400px" />
+                        <figcaption align="middle">Size=0.5</figcaption>
+                    </td>
+					<td>
+                        <img src="images/dragon_b1.0.png" align="middle" width="400px" />
+                        <figcaption align="middle">Size=1.0</figcaption>
+                    </td>
+                </tr>
+            </table>
+        </div>
+</body>
+
 </html>
