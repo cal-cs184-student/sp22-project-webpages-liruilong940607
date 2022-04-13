@@ -163,10 +163,7 @@
 		</blockquote>
 
 
-		<p><b>
-				Show us a screenshot of your shaded cloth from scene/pinned4.json in its final resting state!
-				If you choose to use different parameters than the default ones, please list them.
-			</b></p>
+		<p><b> II. Show us a screenshot of your shaded cloth from scene/pinned4.json in its final resting state!</b></p>
 
 		<div align="middle">
 			<table width="30%">
@@ -179,7 +176,7 @@
 			</table>
 		</div>
 
-		<!-- Task 2 -->
+		<!-- Task 3 -->
 		<h2 align="middle">Part 3: Handling collisions with other objects</h2>
 
 		<p><b>I. Show us screenshots of your shaded cloth from scene/sphere.json in its final resting state
@@ -213,7 +210,7 @@
 		</div>
 
 
-		<p><b>I. Show us a screenshot of your shaded cloth lying peacefully at rest on the plane.</b></p>
+		<p><b>II. Show us a screenshot of your shaded cloth lying peacefully at rest on the plane.</b></p>
 
 		<div align="middle">
 			<table width="30%">
@@ -225,6 +222,72 @@
 				</tr>
 			</table>
 		</div>
+
+		<!-- Task 4 -->
+		<h2 align="middle">Part 4: Handling self-collisions</h2>
+
+		<p><b>I. Show us at least 3 screenshots that document how your cloth falls and folds on itself,
+				starting with an early, initial self-collision and ending with the cloth at a more restful state .
+			</b>
+		</p>
+
+
+		<div align="middle">
+			<table width="90%">
+				<tr>
+					<td>
+						<img src="images/part4_1.png" align="middle" width="300px" />
+						<figcaption align="middle">Initial state</figcaption>
+					</td>
+					<td>
+						<img src="images/part4_2.png" align="middle" width="300px" />
+						<figcaption align="middle">Middle state</figcaption>
+					</td>
+					<td>
+						<img src="images/part4_3.png" align="middle" width="300px" />
+						<figcaption align="middle">Final rest state</figcaption>
+					</td>
+				</tr>
+			</table>
+		</div>
+
+		<p><b>
+				Vary the density as well as ks and describe with words and screenshots how they affect the behavior of
+				the cloth as it falls on itself.</b>
+		</p>
+
+		<blockquote>
+			<p> Larger <code>ks</code> provides more rigidty so the cloth is less self twisted during its falling.
+				Smaller <code>density</code> reduce the affect of gravity, which is equivalent to relatively increase
+				its rigidty so we could see similar effects with larger ks.
+			</p>
+		</blockquote>
+
+		<div align="middle">
+			<table width="90%">
+				<tr>
+					<td>
+						<img src="images/part4_density_1.png" align="middle" width="450px" />
+						<figcaption align="middle">denstiy = 1</figcaption>
+					</td>
+					<td>
+						<img src="images/part4_density_50.png" align="middle" width="450px" />
+						<figcaption align="middle">density = 50</figcaption>
+					</td>
+				</tr>
+				<tr>
+					<td>
+						<img src="images/part4_ks_1e5.png" align="middle" width="450px" />
+						<figcaption align="middle">ks = 100000</figcaption>
+					</td>
+					<td>
+						<img src="images/part4_ks_5e3.png" align="middle" width="450px" />
+						<figcaption align="middle">ks = 5000</figcaption>
+					</td>
+				</tr>
+			</table>
+		</div>
+
 
 </body>
 
