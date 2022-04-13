@@ -288,6 +288,107 @@
 			</table>
 		</div>
 
+		<!-- Task 5 -->
+		<h2 align="middle">Part 4: Shaders</h2>
+
+		<p><b>I. Explain in your own words what is a shader program and how vertex and fragment shaders work
+				together to create lighting and material effects.</b>
+		</p>
+		<blockquote>
+			<p>
+				A shader program makes use of GPU resources to do parallel computing for rendering pixels. A shader
+				program
+				usually contains two shaders -- vertex shader and fragment shader, where the first one parallel over all
+				vertices
+				and the second one parallel over all pixels. The outputs of the vertex shader usually would be fed into
+				the
+				fragment shader as inputs, containing various vertex attributes, and the fragment shader would calculate
+				the pixel
+				color based on those vertex attributes.
+			</p>
+		</blockquote>
+
+		<p><b>II. Explain the Blinn-Phong shading model in your own words. Show a screenshot of your Blinn-Phong
+				shader outputting only the ambient component, a screen shot only outputting the diffuse component,
+				a screen shot only outputting the specular component, and one using the entire Blinn-Phong model.</b>
+		</p>
+		<blockquote>
+			<p>
+				The Blinn-Phong shading is modified from Phone shading model, where the difference is that Blinn-Phong
+				uses
+				the half-edge vector to compare with the surface normal for specularity calculation, instead of
+				comparing
+				view direction with the reflected direction as in Phong. This is less physically correct but it makes it
+				possible
+				to calculate specularity when there is a large view and feflect angle (> 90 degree).
+			</p>
+		</blockquote>
+
+		<div align="middle">
+			<table width="90%">
+				<tr>
+					<td>
+						<img src="images/part5_bphone_full.png" align="middle" width="450px" />
+						<figcaption align="middle">Full Blinn-Phong Shading</figcaption>
+					</td>
+					<td>
+						<img src="images/part5_bphone_a.png" align="middle" width="450px" />
+						<figcaption align="middle">Only ambient component</figcaption>
+					</td>
+				</tr>
+				<tr>
+					<td>
+						<img src="images/part5_bphone_d.png" align="middle" width="450px" />
+						<figcaption align="middle">Only diffuse component</figcaption>
+					</td>
+					<td>
+						<img src="images/part5_bphone_s.png" align="middle" width="450px" />
+						<figcaption align="middle">Only specular component</figcaption>
+					</td>
+				</tr>
+			</table>
+		</div>
+
+		<p><b>III. Show a screenshot of your texture mapping shader using your own custom texture by modifying
+				the textures in /textures/.</b>
+		</p>
+		<div align="middle">
+			<table width="30%">
+				<tr>
+					<td>
+						<img src="images/part5_texture.png" align="middle" width="300px" />
+						<figcaption align="middle">The texture mapping shader.</figcaption>
+					</td>
+				</tr>
+			</table>
+		</div>
+
+		<p><b>IV. Show a screenshot of bump mapping on the cloth and on the sphere. Show a screenshot of displacement
+				mapping on the sphere. Use the same texture for both renders. You can either provide your own texture or
+				use one of the ones in the textures directory, BUT choose one that's not the default texture_2.png.
+				Compare the two approaches and resulting renders in your own words. Compare how your the two shaders
+				react to the sphere by changing the sphere mesh's coarseness by using -o 16 -a 16 and then -o 128 -a
+				128.</b>
+		</p>
+		<blockquote>
+			<p>
+			</p>
+		</blockquote>
+
+		<p><b>V. Show a screenshot of your mirror shader on the cloth and on the sphere.</b>
+		</p>
+		<div align="middle">
+			<table width="60%">
+				<tr>
+					<td>
+						<img src="images/part5_mirror1.png" align="middle" width="300px" />
+					</td>
+					<td>
+						<img src="images/part5_mirror2.png" align="middle" width="300px" />
+					</td>
+				</tr>
+			</table>
+		</div>
 
 </body>
 
