@@ -1,7 +1,184 @@
-<html>
-	<head>
-	</head>
-	<body>
-		Project 4 here
-	</body>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+
+<head>
+	<style>
+		body {
+			padding: 100px;
+			width: 1000px;
+			margin: auto;
+			text-align: left;
+			font-weight: 300;
+			font-family: 'Open Sans', sans-serif;
+			color: #121212;
+		}
+
+		h1,
+		h2,
+		h3,
+		h4 {
+			font-family: 'Source Sans Pro', sans-serif;
+		}
+
+		img {
+			border: 1px solid #555;
+		}
+
+		.text-table {
+			border: 1px solid black;
+		}
+	</style>
+	<title>CS 184 Assignment 3-2</title>
+	<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+	<link href="https://fonts.googleapis.com/css?family=Open+Sans|Source+Sans+Pro" rel="stylesheet">
+</head>
+
+
+<body>
+
+	<h1 align="middle">CS 184/284: Computer Graphics and Imaging, Spring 2022</h1>
+	<h1 align="middle">Assignment 4</h1>
+	<h2 align="middle">Ruilong Li</h2>
+	<h2 align="middle">CS284 - 3037377380</h2>
+	<h2 align="middle">
+		<a href="https://cal-cs184-student.github.io/sp22-project-webpages-liruilong940607/proj4/">Website Link</a>
+	</h2>
+
+	<br><br>
+
+	<div>
+
+		<!-- <h2 align="middle">Overview</h2> -->
+
+		<!-- Give a high-level overview of what you implemented in this project. 
+        Think about what you've built as a whole. Share your thoughts on what 
+        interesting things you've learned from completing the project. -->
+		<!-- <p> -->
+		<!-- This assignment goes through a basic ray tracing process for 3D scene rendering.
+			It covers generating rays on the image plane; calculating the ray-triangle,
+			ray-sphere, ray-bbox intersections; direction and indirect illuminations; as well
+			as some necessary acceleration algorithms such as BVH structure and adaptive sampling. -->
+		<!-- </p> -->
+
+		<!-- Task 1 -->
+		<h2 align="middle">Part 1: Masses and springs</h2>
+
+		<blockquote>
+			<p>
+			</p>
+		</blockquote>
+
+		<p><b>
+				I. Take some screenshots of scene/pinned2.json from a viewing angle where you can
+				clearly see the cloth wireframe to show the structure of your point masses and springs.
+				Show us what the wireframe looks like (1) without any shearing constraints,
+				(2) with only shearing constraints, and (3) with all constraints.
+			</b></p>
+
+		<div align="middle">
+			<table width="90%">
+				<tr>
+					<td>
+						<img src="images/part1_1.png" align="middle" width="300px" />
+						<figcaption align="middle">with all constraints.</figcaption>
+					</td>
+					<td>
+						<img src="images/part1_2.png" align="middle" width="300px" />
+						<figcaption align="middle">without any shearing constraints.</figcaption>
+					</td>
+					<td>
+						<img src="images/part1_3.png" align="middle" width="300px" />
+						<figcaption align="middle"> with only shearing constraints.</figcaption>
+					</td>
+				</tr>
+			</table>
+		</div>
+
+		<!-- Task 2 -->
+		<h2 align="middle">Part 2: Simulation via numerical integration</h2>
+
+		<p><b>I. Experiment with some the parameters in the simulation.</b></p>
+
+
+		<blockquote>
+			<p> Experimenting with the parameter <code>ks</code>, we discover the larger it is, the more rigid
+				the cloth would be during the deformation. It is because larger <code>ks</code> provides a harder
+				constrain on the masses and overall the cloth behaves more like a single rigid object.
+			</p>
+		</blockquote>
+
+		<div align="middle">
+			<table width="90%">
+				<tr>
+					<td>
+						<img src="images/part2_ks_1e2.png" align="middle" width="300px" />
+						<figcaption align="middle">ks = 1e2</figcaption>
+					</td>
+					<td>
+						<img src="images/part2_ks_1e5.png" align="middle" width="300px" />
+						<figcaption align="middle">ks = 1e5</figcaption>
+					</td>
+					<td>
+						<img src="images/part2_ks_1e6.png" align="middle" width="300px" />
+						<figcaption align="middle">ks = 1e6</figcaption>
+					</td>
+				</tr>
+			</table>
+		</div>
+
+		<blockquote>
+			<p> Experimenting with the parameter <code>density</code>, we discover the larger it is, the more
+				deformation
+				the cloth ends up for. It aligns with our expectation that a "heavier" cloth deforms more when it
+				hangs there, due to gravity.
+			</p>
+		</blockquote>
+
+		<div align="middle">
+			<table width="90%">
+				<tr>
+					<td>
+						<img src="images/part2_density_100.png" align="middle" width="300px" />
+						<figcaption align="middle">density = 100</figcaption>
+					</td>
+					<td>
+						<img src="images/part2_density_15.png" align="middle" width="300px" />
+						<figcaption align="middle">density = 15</figcaption>
+					</td>
+					<td>
+						<img src="images/part2_density_2.png" align="middle" width="300px" />
+						<figcaption align="middle">density = 2</figcaption>
+					</td>
+				</tr>
+			</table>
+		</div>
+
+		<blockquote>
+			<p> Experimenting with the parameter <code>damping</code>, we observe the larger the parameter is,
+				the slower the cloth deforms. This is also as expected as <code>damping</code> is a factor to
+				mimic the fraction etc and is used to scale down the velocity at each simulation step. We don't
+				show pictures here as the differences are visble during the simulation but they all end up the same
+				final resting state.
+			</p>
+		</blockquote>
+
+
+		<p><b>
+				Show us a screenshot of your shaded cloth from scene/pinned4.json in its final resting state!
+				If you choose to use different parameters than the default ones, please list them.
+			</b></p>
+
+		<div align="middle">
+			<table width="30%">
+				<tr>
+					<td>
+						<img src="images/part2_cloth_4.png" align="middle" width="300px" />
+						<figcaption align="middle">final resting state of scene/pinned4.json</figcaption>
+					</td>
+				</tr>
+			</table>
+		</div>
+
+</body>
+
 </html>
